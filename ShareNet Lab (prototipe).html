@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><title>ShareNet Lab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono&display=swap">
+<style>
+:root{--bg:#F5F7FA;--sf:#fff;--tx:#1B2430;--mu:#5A6675;--pr:#1F3A5F;--ac:#00796B;--on:#fff;--ok:#2E7D32;--bad:#C62828;--bd:#D5DCE6;--tm:#101820;--tt:#CDEFD9;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1720;--sf:#17212C;--tx:#E6EBF1;--mu:#9AA7B6;--pr:#8DB4E8;--ac:#4DB6AC;--on:#0F1720;--ok:#66BB6A;--bad:#EF7B7B;--bd:#2B3A4A;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F1720;--sf:#17212C;--tx:#E6EBF1;--mu:#9AA7B6;--pr:#8DB4E8;--ac:#4DB6AC;--on:#0F1720;--ok:#66BB6A;--bad:#EF7B7B;--bd:#2B3A4A;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.55 Inter,system-ui,sans-serif}
+main{max-width:1040px;margin:0 auto;padding:20px 16px 40px}
+h1{margin:0;font-size:1.7rem;color:var(--pr)}h2{margin:0 0 4px;font-size:1.15rem}h3{margin:0 0 8px;font-size:1rem;color:var(--pr)}
+p{margin:4px 0}.mu{color:var(--mu)}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:14px 16px;margin-top:12px}
+.grid{display:grid;grid-template-columns:1.1fr 1fr;gap:12px}@media(max-width:760px){.grid{grid-template-columns:1fr}}
+nav{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+button{font:inherit;min-height:44px;padding:6px 14px;border-radius:6px;border:1px solid var(--bd);background:var(--sf);color:var(--tx);cursor:pointer}
+button.p{background:var(--ac);border-color:var(--ac);color:var(--on);font-weight:600}
+nav button[aria-pressed=true]{background:var(--pr);color:var(--bg);border-color:var(--pr)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+fieldset{border:1px solid var(--bd);border-radius:6px;margin:0 0 8px;padding:6px 12px}legend{padding:0 4px;color:var(--mu)}
+fieldset label{margin-right:16px}
+.pc{border:1px solid var(--bd);border-radius:6px;padding:8px 12px;margin-bottom:10px}
+.pc label{display:block;margin:6px 0}.pc input[type=text],.pc select{width:100%;min-height:40px;padding:4px 8px;font:inherit;font-family:"JetBrains Mono",ui-monospace,monospace;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:6px}
+pre{background:var(--tm);color:var(--tt);font:14px/1.5 "JetBrains Mono",ui-monospace,monospace;padding:10px 12px;border-radius:6px;min-height:92px;margin:0;white-space:pre-wrap;overflow-x:auto}
+svg{width:100%;height:auto;display:block}svg text{fill:var(--tx);font:13px "JetBrains Mono",ui-monospace,monospace}
+.done{border-left:4px solid var(--ok);padding:6px 10px;background:var(--bg);font-weight:600}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:5px 8px;text-align:left}
+.fail{color:var(--bad)}.okc{color:var(--ok)}
+</style></head><body><main>
+<header><h1>ShareNet Lab</h1><p class="mu">Simulasi konfigurasi IP dan file sharing pada jaringan LAN. Prototipe Skenario 0–4.</p></header>
+<nav id="tabs" aria-label="Pilih skenario"></nav>
+<section class="card"><h2 id="mt"></h2><p id="mm"></p><p id="gl" class="mu"></p><p id="dn" class="done" role="status" hidden></p></section>
+<div class="grid">
+<section class="card"><h3>Topologi dan uji</h3><svg id="tp" viewBox="0 0 430 140" role="img" aria-label="PC-A dan PC-B terhubung melalui switch"></svg>
+<fieldset><legend>Prediksi saya sebelum Uji ping atau Buka folder</legend><label><input type="radio" name="pr" value="ok"> berhasil</label><label><input type="radio" name="pr" value="no"> gagal</label></fieldset>
+<div class="btns"><button class="p" id="bp">Uji ping</button><button class="p" id="bo">Buka folder</button><button id="b1">Salin dari PC-B ke PC-A</button><button id="b2">Salin dari PC-A ke PC-B</button></div>
+<pre id="out" aria-live="polite">Atur parameter, buat prediksi, lalu tekan tombol uji.</pre></section>
+<section class="card"><h3>Panel kontrol</h3>
+<div class="pc"><b>PC-A (komputer Anda)</b><label>IP address<input type="text" id="ia" autocomplete="off" inputmode="decimal"></label><label>Subnet mask<input type="text" id="ma" autocomplete="off"></label><label><input type="checkbox" id="ca"> Kabel PC-A terpasang</label></div>
+<div class="pc"><b>PC-B (menyimpan folder bersama)</b><label>IP address<input type="text" id="ib" autocomplete="off" inputmode="decimal"></label><label>Subnet mask<input type="text" id="mb" autocomplete="off"></label><label><input type="checkbox" id="cb"> Kabel PC-B terpasang</label>
+<label><input type="checkbox" id="sv"> Layanan berbagi berkas aktif (penemuan jaringan, file sharing, firewall)</label><label><input type="checkbox" id="sh"> Folder Data dibagikan</label><label>Izin folder<select id="pm"><option value="0">Tidak ada</option><option value="1">Baca</option><option value="2">Ubah</option></select></label></div></section></div>
+<section class="card"><h3>Petunjuk bertingkat</h3><div class="btns"><button id="h1">Petunjuk 1: gejala</button><button id="h2">Petunjuk 2: konsep</button><button id="h3">Petunjuk 3: solusi</button></div><p id="ht" class="mu">Gunakan petunjuk bila ragu. Petunjuk 3 dicatat pada ringkasan.</p></section>
+<section class="card"><h3>Log percobaan</h3><div class="tw"><table><thead><tr><th>No</th><th>Aksi</th><th>Hasil</th><th>Kode</th></tr></thead><tbody id="lg"></tbody></table></div><p id="sm" class="mu"></p></section>
+</main><script>
+const $=i=>document.getElementById(i),SC=[
+{n:"0. Contoh terpandu",m:"Semua pengaturan sudah benar. Ikuti urutan: uji ping, buka folder, lalu salin berkas dari PC-B ke PC-A.",A:["192.168.1.10","255.255.255.0"],B:["192.168.1.11","255.255.255.0"],sv:1,sh:1,pm:2,g:["ping","open","cp1"],h:["Mulai dengan prediksi, lalu tekan Uji ping.","Ping memeriksa jalur jaringan; folder baru bisa dibuka setelah jalur itu ada.","Urutannya: Uji ping, Buka folder, Salin dari PC-B ke PC-A."]},
+{n:"1. Dua PC tidak terhubung",m:"PC-A tidak bisa ping ke PC-B. Perbaiki pengaturan sampai ping berhasil.",A:["192.168.1.10","255.255.255.0"],B:["192.168.2.11","255.255.255.0"],sv:1,sh:1,pm:2,g:["ping"],h:["Kedua komputer tampaknya berada pada jaringan yang berbeda.","Bandingkan network ID: IP AND subnet mask, untuk PC-A dan PC-B.","Ubah IP PC-B menjadi 192.168.1.11 dengan mask 255.255.255.0."]},
+{n:"2. IP bentrok",m:"Ping ke PC-B gagal padahal kabel terpasang. Temukan penyebabnya.",A:["192.168.1.10","255.255.255.0"],B:["192.168.1.10","255.255.255.0"],sv:1,sh:1,pm:2,g:["ping"],h:["Periksa apakah ada dua perangkat yang tampak sama di jaringan ini.","Dalam satu jaringan, setiap alamat IP harus unik.","Ubah IP salah satu PC, misalnya PC-B menjadi 192.168.1.11."]},
+{n:"3. Ping berhasil, folder tidak terbuka",m:"Ping sudah berhasil, tetapi folder Data di PC-B tidak bisa dibuka. Telusuri sampai berkas tersalin ke PC-A.",A:["192.168.1.10","255.255.255.0"],B:["192.168.1.11","255.255.255.0"],sv:0,sh:1,pm:1,g:["ping","open","cp1"],h:["Jaringan sudah aman karena ping berhasil. Masalah ada pada PC-B.","Berbagi berkas punya pengaturan sendiri: layanan, status berbagi, dan izin.","Aktifkan layanan berbagi berkas pada PC-B."]},
+{n:"4. Tantangan",m:"Ada dua masalah. Buat ping berhasil, lalu salin berkas dari PC-A ke PC-B.",A:["192.168.1.10","255.255.255.128"],B:["192.168.1.130","255.255.255.128"],sv:1,sh:1,pm:1,g:["ping","cp2"],h:["Satu masalah ada pada koneksi, satu lagi pada hak akses.","Hitung network ID memakai mask /25 untuk kedua PC. Lalu periksa izin untuk menulis.","Ubah IP PC-B menjadi 192.168.1.20 dan izin folder menjadi Ubah."]}];
+const GL={ping:"uji ping berhasil",open:"folder terbuka",cp1:"salin ke PC-A berhasil",cp2:"salin ke PC-B berhasil"};
+let cur=0,ach=new Set,fails=0,logs=[],hu=[0,0,0],pn=0,pr=0;
+const ts=n=>[n>>>24,n>>16&255,n>>8&255,n&255].join(".");
+function pip(s){const p=s.trim().split(".");if(p.length!==4||p.some(x=>!/^\d{1,3}$/.test(x)||+x>255))return null;return((p[0]<<24)|(p[1]<<16)|(p[2]<<8)|+p[3])>>>0}
+function pmk(s){s=s.trim();let m;if(s[0]==="/"){const n=+s.slice(1);if(!/^\/\d{1,2}$/.test(s)||n<1||n>30)return null;m=(0xFFFFFFFF<<(32-n))>>>0}else m=pip(s);if(!m)return null;const v=(~m)>>>0;return(v&((v+1)>>>0))===0&&v>=3?m:null}
+function pc(x){const a=x==="A",ip=pip($(a?"ia":"ib").value),mk=pmk($(a?"ma":"mb").value),n="PC-"+x;
+ if(ip===null)return{e:`${n}: IP tidak valid, setiap oktet harus 0–255.`,c:"R1"};
+ if(mk===null)return{e:`${n}: subnet mask tidak valid.`,c:"R2"};
+ const net=(ip&mk)>>>0,bc=(net|~mk)>>>0;
+ if(ip===net)return{e:`${n}: ${ts(ip)} adalah network address, bukan alamat komputer.`,c:"R3"};
+ if(ip===bc)return{e:`${n}: ${ts(ip)} adalah broadcast address, bukan alamat komputer.`,c:"R3"};
+ return{ip,mk}}
+function reach(){const a=pc("A"),b=pc("B");if(a.e||b.e){const x=a.e?a:b;return{ok:0,t:"Input ditolak. "+x.e,c:x.c}}
+ if(!$("ca").checked||!$("cb").checked)return{ok:0,t:"Request timed out.",c:"R6"};
+ if(a.ip===b.ip)return{ok:0,t:"Request timed out.",c:"R5"};
+ const s=(a.ip&a.mk)>>>0===(b.ip&a.mk)>>>0&&(a.ip&b.mk)>>>0===(b.ip&b.mk)>>>0;
+ if(!s)return{ok:0,t:"Destination host unreachable.",c:"R4"};
+ return{ok:1,t:Array(4).fill(`Reply from ${ts(b.ip)}: bytes=32 time<1ms TTL=128`).join("\n"),c:"R7"}}
+function fold(){const r=reach();if(!r.ok)return{ok:0,t:r.c.startsWith("R")&&r.t.startsWith("Input")?r.t:"Jaringan tidak ditemukan. Uji koneksi terlebih dahulu.",c:r.c};
+ if(!$("sv").checked)return{ok:0,t:"Windows tidak dapat mengakses PC-B. Layanan berbagi tidak tersedia.",c:"R8"};
+ if(!$("sh").checked)return{ok:0,t:"Folder Data tidak ditemukan di PC-B.",c:"R8"};
+ if($("pm").value==="0")return{ok:0,t:"Akses ditolak. Anda tidak memiliki izin.",c:"R8"};
+ return{ok:1,t:`Folder Data terbuka. Izin: ${$("pm").selectedOptions[0].text}.`,c:"R8"}}
+function act(k){let r,l;
+ if(k==="ping"||k==="open"){const v=document.querySelector("input[name=pr]:checked");if(!v){$("out").textContent="Pilih prediksi (berhasil atau gagal) sebelum menguji.";return}
+  r=k==="ping"?reach():fold();l=k==="ping"?"Uji ping":"Buka folder";pn++;const hit=(v.value==="ok")===!!r.ok;pr+=hit;
+  r.t+=`\n\nPrediksi Anda ${hit?"tepat":"belum tepat"}.`;v.checked=false}
+ else{const f=fold();l=k==="cp1"?"Salin ke PC-A":"Salin ke PC-B";
+  r=!f.ok?{ok:0,t:f.t,c:f.c}:k==="cp1"?{ok:1,t:"1 berkas disalin dari PC-B ke PC-A.",c:"R9"}:$("pm").value==="2"?{ok:1,t:"1 berkas disalin ke PC-B.",c:"R9"}:{ok:0,t:"Akses ditolak. Izin Baca tidak mengizinkan menulis ke folder.",c:"R9"}}
+ if(r.ok)ach.add(k);else fails++;
+ logs.push([l,r.ok?"Berhasil":"Gagal",r.c]);$("out").textContent=r.t;draw()}
+function draw(){const g=SC[cur].g;$("gl").textContent="Tujuan: "+g.map(x=>GL[x]).join(", ")+".";
+ const d=g.every(x=>ach.has(x));$("dn").hidden=!d;if(d)$("dn").textContent="Misi selesai dalam "+logs.length+" percobaan.";
+ $("lg").innerHTML=logs.map((x,i)=>`<tr><td>${i+1}</td><td>${x[0]}</td><td class="${x[1]==="Gagal"?"fail":"okc"}">${x[1]==="Gagal"?"✗ Gagal":"✓ Berhasil"}</td><td>${x[2]}</td></tr>`).join("");
+ $("sm").textContent=`Percobaan: ${logs.length}. Gagal: ${fails}. Prediksi tepat: ${pr} dari ${pn}. Petunjuk dipakai: ${hu[0]+hu[1]+hu[2]} (petunjuk 3: ${hu[2]}).`;
+ const ia=$("ia").value,ib=$("ib").value,A=$("ca").checked,B=$("cb").checked,dup=ia.trim()&&ia.trim()===ib.trim();
+ const ln=(x1,x2,on)=>`<line x1="${x1}" y1="70" x2="${x2}" y2="70" stroke="${on?"var(--ok)":"var(--bad)"}" stroke-width="3" ${on?"":'stroke-dasharray="6 5"'}/>`;
+ $("tp").innerHTML=`<rect x="8" y="30" width="110" height="80" rx="8" fill="none" stroke="var(--pr)" stroke-width="2"/><text x="63" y="56" text-anchor="middle">PC-A${dup?" !":""}</text><text x="63" y="78" text-anchor="middle" style="font-size:11px">${ia||"-"}</text><text x="63" y="96" text-anchor="middle" style="font-size:11px">${$("ma").value||"-"}</text>
+ <rect x="170" y="52" width="90" height="36" rx="6" fill="none" stroke="var(--pr)" stroke-width="2"/><text x="215" y="75" text-anchor="middle">switch</text>
+ <rect x="312" y="30" width="110" height="80" rx="8" fill="none" stroke="var(--pr)" stroke-width="2"/><text x="367" y="56" text-anchor="middle">PC-B${dup?" !":""}</text><text x="367" y="78" text-anchor="middle" style="font-size:11px">${ib||"-"}</text><text x="367" y="96" text-anchor="middle" style="font-size:11px">${$("mb").value||"-"}</text>
+ ${ln(118,170,A)}${ln(260,312,B)}<text x="144" y="62" text-anchor="middle" style="font-size:11px">${A?"terhubung":"putus"}</text><text x="286" y="62" text-anchor="middle" style="font-size:11px">${B?"terhubung":"putus"}</text>`}
+function load(i){cur=i;const s=SC[i];ach=new Set;fails=0;logs=[];hu=[0,0,0];pn=pr=0;
+ $("mt").textContent="Skenario "+s.n;$("mm").textContent=s.m;
+ [$("ia").value,$("ma").value]=s.A;[$("ib").value,$("mb").value]=s.B;$("ca").checked=$("cb").checked=true;$("sv").checked=!!s.sv;$("sh").checked=!!s.sh;$("pm").value=s.pm;
+ $("out").textContent="Atur parameter, buat prediksi, lalu tekan tombol uji.";$("ht").textContent="Gunakan petunjuk bila ragu. Petunjuk 3 dicatat pada ringkasan.";
+ $("tabs").querySelectorAll("button").forEach((b,j)=>b.setAttribute("aria-pressed",j===i));draw()}
+$("tabs").innerHTML=SC.map((s,i)=>`<button aria-pressed="false">${s.n}</button>`).join("");
+$("tabs").querySelectorAll("button").forEach((b,i)=>b.onclick=()=>load(i));
+[["bp","ping"],["bo","open"],["b1","cp1"],["b2","cp2"]].forEach(([b,k])=>$(b).onclick=()=>act(k));
+[1,2,3].forEach(n=>$("h"+n).onclick=()=>{hu[n-1]++;$("ht").textContent=`Petunjuk ${n}: `+SC[cur].h[n-1];draw()});
+["ia","ma","ib","mb","ca","cb","sv","sh","pm"].forEach(i=>$(i).addEventListener("input",()=>{ach.clear();draw()}));
+load(1);
+</script></body></html>
